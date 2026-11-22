@@ -1,0 +1,21 @@
+// for a description of the options see:
+// https://plengine.net/pages/docs/editor/editor-plugins.html
+
+PluginInfo
+{
+	string %DisplayName{"Intel XeSS"}
+	string %Category{"Rendering"}
+	string %MinEngineVersion{"0.12.1"}
+	string %MaxEngineVersion{""}
+	string %Icon{"XeSSIcon.png"}
+	string %Banner{"XeSSBanner.png"}
+	string %Description{"Intel Xe Super Sampling as a temporal upscaler (Rendering.Upscaler = XeSS) on D3D12."}
+	string %EditorPlugins{}
+	string %EditorEnginePlugins{}
+	string %RuntimePlugins{"plXeSSPlugin"}
+	string %PackageDependencies{"libxess"}
+	string %RequiredPlugins{}
+	string %ExclusiveFeatures{}
+	string %EnabledInTemplates{}
+	string %PlasmaBuildTargetName{"XeSSPlugin"}
+}

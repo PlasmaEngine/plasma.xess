@@ -1,0 +1,35 @@
+// plasma.xess — Intel Xe Super Sampling for the engine's upscaler framework.
+//
+// The AUTHORED manifest, kept in source next to the plugin. Component hashes and sizes are NOT
+// here: the packaging step computes those and emits them into the published manifest.
+//
+// Field reference and validation rules: Docs/PluginPackageManagerPlan.html §05.
+
+PackageInfo
+{
+	string %Id{"plasma.xess"}
+	string %Version{"1.0.0"}
+	string %Publisher{"PlasmaTechnology"}
+	string %License{"MIT"}
+	string %Homepage{"https://plasmagameengine.com"}
+
+	string %MinEngineVersion{"0.12.1"}
+	string %MaxEngineVersion{""}
+	string %AbiTag{"win64-msvc19-0.12.1-abi7-dev"}
+
+	string %DisplayName{"Intel XeSS"}
+	string %Category{"Rendering"}
+	string %Description{"Adds Intel Xe Super Sampling as a temporal upscaler (Rendering.Upscaler = XeSS) on D3D12. Runs on any GPU with Shader Model 6.4 and uses the matrix units of Intel Arc GPUs. Vulkan is not supported yet. Can be installed alongside the other upscaler packages; the game settings choose between them. Third-party notice: ships Intel's libxess.dll under the Intel Simplified Software License (XeSS-LICENSE.txt, XeSS-third-party-programs.txt)."}
+	string %Icon{"Branding/XeSSIcon.png"}
+	string %Banner{"Branding/XeSSBanner.png"}
+
+	string %EditorPlugins{}
+	string %EditorEnginePlugins{}
+	string %RuntimePlugins{"plXeSSPlugin"}
+	string %PackageDependencies{"libxess", "XeSS-LICENSE.txt", "XeSS-third-party-programs.txt"}
+
+	Component { string %Name{"manifest"} string %Platform{"any"} }
+	Component { string %Name{"runtime-win64"} string %Platform{"win64"} }
+	Component { string %Name{"icon"} string %Platform{"any"} }
+	Component { string %Name{"banner"} string %Platform{"any"} }
+}

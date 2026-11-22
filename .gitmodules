@@ -1,0 +1,4 @@
+[submodule "ThirdParty/XeSS"]
+	path = ThirdParty/XeSS
+	url = https://github.com/intel/xess.git
+	shallow = true
