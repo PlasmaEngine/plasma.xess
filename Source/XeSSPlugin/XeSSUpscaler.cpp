@@ -26,6 +26,7 @@ public:
     decltype(&xessDestroyContext) m_DestroyContext = nullptr;
     decltype(&xessSetVelocityScale) m_SetVelocityScale = nullptr;
     decltype(&xessSetJitterScale) m_SetJitterScale = nullptr;
+    decltype(&xessSetLoggingCallback) m_SetLoggingCallback = nullptr;
   };
 
   virtual plStringView GetName() const override { return "XeSS"; }
@@ -101,6 +102,14 @@ namespace
     return best;
   }
 
+  void XeSSLog(const char* szMessage, xess_logging_level_t level)
+  {
+    if (level >= XESS_LOGGING_LEVEL_ERROR)
+      plLog::Error("XeSS: {}", szMessage);
+    else
+      plLog::Warning("XeSS: {}", szMessage);
+  }
+
   ID3D12Resource* GetResource(plGALDevice& ref_device, plGALTextureHandle hTexture)
   {
     plGALNativeTexture texture;
@@ -133,6 +142,10 @@ namespace
         m_hContext = nullptr;
         return false;
       }
+
+      // XeSS explains rejected arguments only through its log.
+      if (m_Functions.m_SetLoggingCallback != nullptr)
+        m_Functions.m_SetLoggingCallback(m_hContext, XESS_LOGGING_LEVEL_WARNING, &XeSSLog);
 
       xess_d3d12_init_params_t init = {};
       init.outputResolution = {m_Desc.m_uiDisplayWidth, m_Desc.m_uiDisplayHeight};
@@ -171,7 +184,12 @@ namespace
       exec.inputHeight = params.m_uiRenderHeight;
 
       if (exec.pColorTexture == nullptr || exec.pVelocityTexture == nullptr || exec.pOutputTexture == nullptr)
+      {
+        if (m_LastError != XESS_RESULT_ERROR_INVALID_ARGUMENT)
+          plLog::Error("XeSS: missing input (color {}, velocity {}, output {}).", exec.pColorTexture != nullptr, exec.pVelocityTexture != nullptr, exec.pOutputTexture != nullptr);
+        m_LastError = XESS_RESULT_ERROR_INVALID_ARGUMENT;
         return PL_FAILURE;
+      }
 
       void* pCommandList = m_Device.BeginNativeCommands(ref_encoder);
       if (pCommandList == nullptr)
@@ -179,6 +197,9 @@ namespace
 
       const xess_result_t result = m_Functions.m_Execute(m_hContext, static_cast<ID3D12GraphicsCommandList*>(pCommandList), &exec);
       m_Device.EndNativeCommands(ref_encoder);
+      if (result != XESS_RESULT_SUCCESS && result != m_LastError)
+        plLog::Error("XeSS: execute failed (error {}).", static_cast<plInt32>(result));
+      m_LastError = result;
       return result == XESS_RESULT_SUCCESS ? PL_SUCCESS : PL_FAILURE;
     }
 
@@ -186,6 +207,7 @@ namespace
     plGALDevice& m_Device;
     plUpscalerBackendXeSS::Functions m_Functions;
     xess_context_handle_t m_hContext = nullptr;
+    xess_result_t m_LastError = XESS_RESULT_SUCCESS;
   };
 } // namespace
 
@@ -210,6 +232,7 @@ bool plUpscalerBackendXeSS::LoadRuntime()
   m_Functions.m_DestroyContext = reinterpret_cast<decltype(m_Functions.m_DestroyContext)>(GetProcAddress(m_hLibrary, "xessDestroyContext"));
   m_Functions.m_SetVelocityScale = reinterpret_cast<decltype(m_Functions.m_SetVelocityScale)>(GetProcAddress(m_hLibrary, "xessSetVelocityScale"));
   m_Functions.m_SetJitterScale = reinterpret_cast<decltype(m_Functions.m_SetJitterScale)>(GetProcAddress(m_hLibrary, "xessSetJitterScale"));
+  m_Functions.m_SetLoggingCallback = reinterpret_cast<decltype(m_Functions.m_SetLoggingCallback)>(GetProcAddress(m_hLibrary, "xessSetLoggingCallback"));
 
   return m_Functions.m_CreateContext && m_Functions.m_Init && m_Functions.m_Execute && m_Functions.m_DestroyContext && m_Functions.m_SetVelocityScale;
 }
