@@ -5,7 +5,7 @@ PluginInfo
 {
 	string %DisplayName{"Intel XeSS"}
 	string %Category{"Rendering"}
-	string %MinEngineVersion{"0.12.1"}
+	string %MinEngineVersion{"0.12.2"}
 	string %MaxEngineVersion{""}
 	string %Icon{"XeSSIcon.png"}
 	string %Banner{"XeSSBanner.png"}
