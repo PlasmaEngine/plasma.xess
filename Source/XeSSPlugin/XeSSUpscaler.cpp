@@ -5,6 +5,7 @@
 #include <RendererCore/Upscaling/Upscaler.h>
 #include <RendererFoundation/CommandEncoder/CommandEncoder.h>
 #include <RendererFoundation/Device/Device.h>
+#include <XeSSPlugin/XeSSRuntime.h>
 
 #include <d3d12.h>
 #include <xess/xess_d3d12.h>
@@ -54,19 +55,6 @@ PL_END_DYNAMIC_REFLECTED_TYPE;
 
 namespace
 {
-  plStringBuilder GetPluginDirectory()
-  {
-    HMODULE hSelf = nullptr;
-    GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCWSTR>(&GetPluginDirectory), &hSelf);
-
-    wchar_t szPath[MAX_PATH] = {};
-    GetModuleFileNameW(hSelf, szPath, MAX_PATH);
-
-    plStringBuilder sPath = plStringUtf8(szPath).GetData();
-    sPath.PathParentDirectory();
-    return sPath;
-  }
-
   /// The XeSS mode whose ratio is closest to the context's display to render ratio. Within a mode the input size may
   /// still change from frame to frame (dynamic resolution).
   xess_quality_settings_t SelectQuality(const plUpscalerContextDesc& desc)
@@ -216,7 +204,7 @@ bool plUpscalerBackendXeSS::LoadRuntime()
   if (m_hLibrary != nullptr)
     return true;
 
-  plStringBuilder sPath = GetPluginDirectory();
+  plStringBuilder sPath = plXeSSRuntime::GetPluginDirectory();
   sPath.AppendPath("libxess.dll");
   sPath.MakePathSeparatorsNative();
   m_hLibrary = LoadLibraryExW(plStringWChar(sPath), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);

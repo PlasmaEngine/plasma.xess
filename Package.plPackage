@@ -1,4 +1,4 @@
-// plasma.xess — Intel Xe Super Sampling for the engine's upscaler framework.
+// plasma.xess — Intel XeSS 3 for the engine's upscaler, frame generation and low-latency frameworks.
 //
 // The AUTHORED manifest, kept in source next to the plugin. Component hashes and sizes are NOT
 // here: the packaging step computes those and emits them into the published manifest.
@@ -8,7 +8,7 @@
 PackageInfo
 {
 	string %Id{"plasma.xess"}
-	string %Version{"1.0.0"}
+	string %Version{"1.1.0"}
 	string %Publisher{"PlasmaTechnology"}
 	string %License{"MIT"}
 	string %Homepage{"https://plasmagameengine.com"}
@@ -19,14 +19,14 @@ PackageInfo
 
 	string %DisplayName{"Intel XeSS"}
 	string %Category{"Rendering"}
-	string %Description{"Adds Intel Xe Super Sampling as a temporal upscaler (Rendering.Upscaler = XeSS) on D3D12. Runs on any GPU with Shader Model 6.4 and uses the matrix units of Intel Arc GPUs. Vulkan is not supported yet. Can be installed alongside the other upscaler packages; the game settings choose between them. Third-party notice: ships Intel's libxess.dll under the Intel Simplified Software License (XeSS-LICENSE.txt, XeSS-third-party-programs.txt)."}
+	string %Description{"Adds Intel XeSS 3 on D3D12: Xe Super Sampling as a temporal upscaler (Rendering.Upscaler = XeSS), XeSS Frame Generation (Rendering.FrameGeneration = XeSS; up to 4x on Intel Arc GPUs, 2x on other GPUs with Shader Model 6.4) and Xe Low Latency (Rendering.LowLatency.Backend = XeLL), which frame generation turns on itself. On non-Intel GPUs XeLL only reduces latency while XeSS Frame Generation runs. Vulkan is not supported yet. Can be installed alongside the other upscaler and frame generation packages; the game settings choose between them. Third-party notice: ships Intel's libxess.dll, libxess_fg.dll and libxell.dll under the Intel Simplified Software License (XeSS-LICENSE.txt, XeSS-third-party-programs.txt)."}
 	string %Icon{"Branding/XeSSIcon.png"}
 	string %Banner{"Branding/XeSSBanner.png"}
 
 	string %EditorPlugins{}
 	string %EditorEnginePlugins{}
 	string %RuntimePlugins{"plXeSSPlugin"}
-	string %PackageDependencies{"libxess", "XeSS-LICENSE.txt", "XeSS-third-party-programs.txt"}
+	string %PackageDependencies{"libxess", "libxess_fg", "libxell", "XeSS-LICENSE.txt", "XeSS-third-party-programs.txt"}
 
 	Component { string %Name{"manifest"} string %Platform{"any"} }
 	Component { string %Name{"runtime-win64"} string %Platform{"win64"} }
